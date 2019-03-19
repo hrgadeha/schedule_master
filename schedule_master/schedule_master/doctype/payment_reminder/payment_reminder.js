@@ -29,6 +29,7 @@ frappe.ui.form.on("Payment Reminder", {
 	cur_frm.refresh();
 	cur_frm.clear_table("payment_reminder_table");
 	cur_frm.refresh_fields();
+	var total = 0
 	
 	if(frm.doc.party_customer){
 	
@@ -46,8 +47,10 @@ callback:function(r){
 		row.date = r.message[i][1];
 		row.status = r.message[i][2];
 		row.outstanding_amount = r.message[i][3];
+		total = total + r.message[i][3];
 	}
 		cur_frm.refresh();
+		frm.set_value("total_outstanding_amount", total);
 	}
     });
 }
@@ -59,6 +62,7 @@ frappe.ui.form.on("Payment Reminder", {
 	cur_frm.refresh();
 	cur_frm.clear_table("purchase_payment_reminder");
 	cur_frm.refresh_fields();
+	var total = 0
 
 	if(frm.doc.party_supplier){
 
@@ -76,8 +80,10 @@ callback:function(r){
 		row.date = r.message[i][1];
 		row.status = r.message[i][2];
 		row.outstanding_amount = r.message[i][3];
+		total = total + r.message[i][3];
 	}
 		cur_frm.refresh();
+		frm.set_value("total_outstanding_amount", total);
 	}
     });
 }

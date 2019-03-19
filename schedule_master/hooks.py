@@ -61,7 +61,7 @@ app_license = "MIT"
 # ------------------
 # See frappe.core.notifications.get_notification_config
 
-# notification_config = "schedule_master.notifications.get_notification_config"
+notification_config = "schedule_master.notifications.get_notification_config"
 
 # Permissions
 # -----------
