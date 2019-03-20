@@ -6,11 +6,13 @@ import frappe
 from frappe import utils
 
 def get_notification_config():
-	return {
-		"for_doctype": {
-			"Payment Reminder": "schedule_master.notifications.get_things_todo"
+	notifications = { "for_doctype": 
+		{
+			"Payment Reminder": "schedule_master.notifications.get_things_todo",
 		}
 	}
+	
+	return notifications
 
 def get_things_todo(as_list=False):
 	"""Returns a count of incomplete todos"""
