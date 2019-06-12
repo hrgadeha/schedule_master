@@ -12,6 +12,7 @@ cur_frm.add_fetch('next_follow_up_by', 'mobile_no', 'contact_number')
 frappe.ui.form.on('Payment Reminder', {
 	"party_type": function(frm) {
 		cur_frm.refresh();
+		frm.set_value("party","");
 		cur_frm.clear_table("payment_reminder_table");
 		cur_frm.clear_table("purchase_payment_reminder");
 		cur_frm.refresh_fields();
@@ -25,19 +26,19 @@ frappe.ui.form.on('Payment Reminder', {
 });
 
 frappe.ui.form.on("Payment Reminder", {
-  party_customer: function(frm) {
+  get_details: function(frm) {
 	cur_frm.refresh();
 	cur_frm.clear_table("payment_reminder_table");
 	cur_frm.refresh_fields();
 	var total = 0
 	
-	if(frm.doc.party_customer){
+	if(frm.doc.party_type == 'Customer'){
 	
     frappe.call({
-    "method": "schedule_master.schedule_master.doctype.payment_reminder.payment_reminder.getSalesInvoice",
+    "method": "schedule_master.schedule_master.doctype.payment_reminder.payment_reminder.getOverdueInvoiceSI",
 args: {
 doctype: "Payment Reminder",
-customer: frm.doc.party_customer
+party: frm.doc.party
 },
 callback:function(r){
 	var len=r.message.length;
@@ -54,32 +55,23 @@ callback:function(r){
 	}
     });
 }
-}
-});
 
-frappe.ui.form.on("Payment Reminder", {
-  party_supplier: function(frm) {
-	cur_frm.refresh();
-	cur_frm.clear_table("purchase_payment_reminder");
-	cur_frm.refresh_fields();
-	var total = 0
-
-	if(frm.doc.party_supplier){
-
+	if(frm.doc.party_type == 'Supplier'){
+	
     frappe.call({
-    "method": "schedule_master.schedule_master.doctype.payment_reminder.payment_reminder.getPurchaseInvoice",
+    "method": "schedule_master.schedule_master.doctype.payment_reminder.payment_reminder.getOverdueInvoicePI",
 args: {
 doctype: "Payment Reminder",
-supplier: frm.doc.party_supplier
+party: frm.doc.party
 },
 callback:function(r){
 	var len=r.message.length;
 	for (var i=0;i<len;i++){
-	        var row = frm.add_child("purchase_payment_reminder");
-		row.invoice = r.message[i][0];
-		row.date = r.message[i][1];
-		row.status = r.message[i][2];
-		row.outstanding_amount = r.message[i][3];
+	        var row_1 = frm.add_child("payment_reminder_table");
+		row_1.invoice = r.message[i][0];
+		row_1.date = r.message[i][1];
+		row_1.status = r.message[i][2];
+		row_1.outstanding_amount = r.message[i][3];
 		total = total + r.message[i][3];
 	}
 		cur_frm.refresh();
@@ -87,6 +79,25 @@ callback:function(r){
 	}
     });
 }
+
+	 frappe.call({
+    "method": "schedule_master.schedule_master.doctype.payment_reminder.payment_reminder.getContactDetails",
+args: {
+doctype: "Payment Reminder",
+party: frm.doc.party
+},
+callback:function(r){
+	var len=r.message.length;
+	for (var i=0;i<len;i++){
+	        var row_1 = frm.add_child("contact_table");
+		row_1.name1 = r.message[i][0];
+		row_1.department = r.message[i][1];
+		row_1.designation = r.message[i][2];
+		row_1.number = r.message[i][3];
+	}
+		cur_frm.refresh();
+	}
+    });
 }
 });
 
